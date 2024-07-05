@@ -1,23 +1,25 @@
 const express = require('express')
+const {
+    get_current_game,
+    createGame,
+    endGame
+} = require('../controllers/gamecontroller')
 
 const router = express.Router()
 
+//get current game (mistakes, so far correct and such)
+router.get('/', get_current_game)
 
-router.post('/', (req, res)=>{
-    res.json({mssg: 'create a new game/post'})
-})
+//create a new game
+router.post('/', createGame)
 
-router.get('/:id', (req, res)=>{
-    res.json({mssg: 'get current game/stats (mistakes, so far correct and such)'})
-})
-
-router.post('/:id/answer', (req, res)=>{
+//check if answer is correct
+router.post('/answer', (req, res)=>{
     res.json({mssg: 'check if answer is correct'})
 })
 
-router.post('/:id/end', (req, res)=>{
-    res.json({mssg: 'end game'})
-})
+//end game
+router.delete('/end', endGame)
 
 
 module.exports = router

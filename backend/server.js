@@ -19,7 +19,6 @@ app.use((req, res, next) => {
 app.use('/api', indexRoutes)
 
 //db
-console.log("Mongo URI:", process.env.MONG_URI)
 mongoose.connect(process.env.MONG_URI)
   .then(() => { 
       app.listen(process.env.PORT, () =>{
