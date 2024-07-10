@@ -1,18 +1,16 @@
 const express = require('express')
-const Stats = require('../models/word_bankmodel')
+const {
+    get_current_wb,
+    createWb,
+    delete_wordbank
+} = require('../controllers/word_bankcontroller')
 
 const router = express.Router()
 
-router.get('/', (req, res)=>{
-    res.json({mssg: 'get current word bank'})
-})
+router.get('/', get_current_wb)
 
-router.post('/', (req, res)=>{
-    res.json({mssg: 'generate word bank/post'})
-})
+router.post('/', createWb)
 
-router.delete('/', (req, res)=>{
-    res.json({mssg: 'delete word bank/post'})
-})
+router.delete('/', delete_wordbank)
 
 module.exports = router

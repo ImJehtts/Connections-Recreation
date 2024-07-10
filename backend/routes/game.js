@@ -14,7 +14,7 @@ router.get('/', get_current_game)
 router.post('/', createGame)
 
 //check if answer is correct
-router.post('/answer', (req, res)=>{
+router.get('/answer', (req, res)=>{
     res.json({mssg: 'check if answer is correct'})
 })
 

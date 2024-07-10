@@ -4,6 +4,10 @@ const Schema = mongoose.Schema
 
 //We create 4 of these, one for each row
 const wbSchema = new Schema({
+    category: {
+        type: [String],
+        required: true
+    },
     words: {
         type: [String],
         required: true
