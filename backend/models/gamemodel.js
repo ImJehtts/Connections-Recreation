@@ -11,10 +11,6 @@ const gameSchema = new Schema({
         type: Number,
         required: true
     },
-    correct_words: {
-        type: [String],
-        required: true
-    },
 }, {timestamps:true})
 
 module.exports = mongoose.model('Game', gameSchema)

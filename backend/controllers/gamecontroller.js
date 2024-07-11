@@ -1,18 +1,22 @@
 const Game = require('../models/gamemodel')
+const Wb = require('../models/word_bankmodel')
 
 //get current game (mistakes, so far correct and such)
 const get_current_game = async (req, res) =>{
-    const current_game = await Game.find({})
-
-    res.status(200).json(current_game)
+    try{
+        const current_game = await Game.find({})
+        res.status(200).json(current_game)
+    }catch (error){
+        res.status(404).json({error: error.message})  
+       }
 }
 
 //create a new game
 const createGame = async (req, res) => {
-    const{mistakes, correct, correct_words} = req.body
+    const{mistakes, correct} = req.body
 
     try{
-     const game = await Game.create({mistakes, correct, correct_words})
+     const game = await Game.create({mistakes, correct})
      res.status(200).json(game)  
  }catch (error){
      res.status(404).json({error: error.message})  
@@ -20,8 +24,37 @@ const createGame = async (req, res) => {
 }
 
 
-//check if answer is correct
-//Will do later
+const check_answer = async (req, res) => {
+    const {answerString} = req.body
+    console.log(answerString)
+    const answer = answerString.split(' ')
+    console.log(answer)
+
+    try{
+        const wordBanks = await Wb.find({})
+        //wordBanks.find goes through all the elements for the first one that the function returns true
+        const matchingWordBank = wordBanks.find(wordBank => {
+            for (let i = 0; i < answer.length; i++) {
+                const word = answer[i];
+                if (!wordBank.words.includes(word)) {
+                    console.log(wordBank.words)
+                    return false; 
+                }
+            }
+            return true; 
+        })
+
+        if(matchingWordBank){
+            res.status(404).json({message: "answer correct", category: matchingWordBank.category[0]})  
+        }else{
+            res.status(404).json({message: "answer incorrect"})  
+        }
+
+        
+    }catch (error){
+        res.status(404).json({error: error.message})  
+    }
+}
 
 
 
@@ -42,5 +75,6 @@ const endGame = async (req, res) => {
 module.exports = {
     get_current_game,
     createGame,
+    check_answer,
     endGame
 }
