@@ -1,12 +1,12 @@
 require('dotenv').config()
 
 
-const express = require('express');
+const express = require('express')
 const indexRoutes = require('./routes/index')
 const mongoose = require('mongoose')
 
 // express app
-const app = express();
+const app = express()
 
 //middleware 
 app.use(express.json())

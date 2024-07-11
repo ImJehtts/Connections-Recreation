@@ -49,7 +49,7 @@ const updateStats = async (req, res) => {
         {...req.body})
         
     if (!stats) {
-        return res.status(404).json({ error: 'No stats with that username' });
+        return res.status(404).json({ error: 'No stats with that username' })
     }
     res.status(200).json(stats)
 

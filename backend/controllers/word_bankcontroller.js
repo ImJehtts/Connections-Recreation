@@ -45,9 +45,9 @@ const get_current_wb = async (req, res) =>{
     try{
         const current_wb = await Wb.find({})
         const wordBankMap = current_wb.reduce((map, wordBank) => {
-            const category = wordBank.category[0]; 
-            map[category] = wordBank.words;
-            return map;
+            const category = wordBank.category[0]
+            map[category] = wordBank.words
+            return map
         }, {})
         res.status(200).json(wordBankMap)   
     }catch (error){

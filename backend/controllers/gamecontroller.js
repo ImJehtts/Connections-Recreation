@@ -35,13 +35,13 @@ const check_answer = async (req, res) => {
         //wordBanks.find goes through all the elements for the first one that the function returns true
         const matchingWordBank = wordBanks.find(wordBank => {
             for (let i = 0; i < answer.length; i++) {
-                const word = answer[i];
+                const word = answer[i]
                 if (!wordBank.words.includes(word)) {
                     console.log(wordBank.words)
-                    return false; 
+                    return false 
                 }
             }
-            return true; 
+            return true 
         })
 
         if(matchingWordBank){
