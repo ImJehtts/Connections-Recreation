@@ -29,6 +29,7 @@ const check_answer = async (req, res) => {
 
     try{
         const wordBanks = await Wb.find({})
+        const game = await Game.findOne({})
         //wordBanks.find goes through all the elements for the first one that the function returns true
         const matchingWordBank = wordBanks.find(wordBank => {
             for (let i = 0; i < answerString.length; i++) {
@@ -41,8 +42,17 @@ const check_answer = async (req, res) => {
         })
 
         if(matchingWordBank){
+            await Wb.updateOne(
+                {_id: matchingWordBank._id}, 
+                {$set: {solved: true}})
+            await Game.updateOne(
+                {_id: game._id}, 
+                {$inc: {correct: 1}})
             res.status(404).json({message: "answer correct", category: matchingWordBank.category[0]})  
         }else{
+            await Game.updateOne(
+                {_id: game._id}, 
+                {$inc: {mistakes: 1}})
             res.status(404).json({message: "answer incorrect"})  
         }
 
