@@ -1,9 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 /* layout */
-:root {
-  --primary: #1aac83;
-  --error: #e7195a;
-}
 body {
   background: #f1f1f1;
   margin: 0;
@@ -28,4 +24,25 @@ header a {
   max-width: 1400px;
   padding: 20px;
   margin: 0 auto;
+}
+
+.instructions {
+  margin-bottom: 10px;
+  padding: 5px;
+  text-align: center;
+  color: #333;
+  margin: 0;
+}
+
+.words {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px; 
+}
+
+.words-d {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: center;
+  font-size: 30px;
 }

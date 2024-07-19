@@ -1,5 +1,5 @@
 require('dotenv').config()
-
+const cors = require('cors')
 
 const express = require('express')
 const indexRoutes = require('./routes/index')
@@ -10,6 +10,7 @@ const app = express()
 
 //middleware 
 app.use(express.json())
+app.use(cors({origin: process.env.FRONT_END_PORT}))
 app.use((req, res, next) => {
     console.log(req.path, req.method)
     next()

@@ -13,7 +13,7 @@ async function get_word_bank(){
     try{
     const response = await openai.chat.completions.create({
         messages: [{ role: 'user', content: prompt }],
-        model:"gpt-4o",
+        model:"gpt-4o-mini",
     })
 
     if (!response || !response.choices || response.choices.length === 0) {
@@ -45,7 +45,7 @@ const get_current_wb = async (req, res) =>{
     try{
         const current_wb = await Wb.find({})
         const wordBankMap = current_wb.reduce((map, wordBank) => {
-            const category = wordBank.category[0]
+            const category = wordBank.category
             map[category] = wordBank.words
             return map
         }, {})
