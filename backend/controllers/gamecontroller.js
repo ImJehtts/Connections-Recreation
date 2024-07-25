@@ -48,12 +48,12 @@ const check_answer = async (req, res) => {
             await Game.updateOne(
                 {_id: game._id}, 
                 {$inc: {correct: 1}})
-            res.status(404).json({message: "answer correct", category: matchingWordBank.category[0]})  
+            res.status(200).json({message: "answer correct", category: matchingWordBank.category})  
         }else{
             await Game.updateOne(
                 {_id: game._id}, 
-                {$inc: {mistakes: 1}})
-            res.status(404).json({message: "answer incorrect"})  
+                {$: {mistakes: -1}})
+            res.status(200).json({message: "answer incorrect"})  
         }
 
         
