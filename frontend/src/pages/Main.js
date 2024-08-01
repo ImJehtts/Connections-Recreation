@@ -17,10 +17,9 @@ function shuffleArray(array) {
 const Main = () => {
   const [words, setWords] = useState([])
   const [selectedWords, setSelectedWords] = useState([])
-  const [solvedWords, setSolvedWords] = useState([])
   const [mistakes, setMistakes] = useState(0)
   const [correct, setCorrect] = useState(0)
-
+  
   useEffect(()=>{
     const fetchWordbank = async () =>{
       const response = await fetch(`/api/wb`)
@@ -28,11 +27,14 @@ const Main = () => {
 
       if (response.ok){
         const transformedData = []
-        Object.entries(json).forEach(([category, wordsArray]) => {
-          wordsArray.forEach(word => {
-            transformedData.push({ category, word })
+        Object.entries(json).forEach(([category, {words, solved}]) => {
+          words.forEach(word => {
+            transformedData.push({category, word, solved})
           })
         })
+
+        const solved_words = transformedData.filter(item => item.solved)
+        const unsolved_words = transformedData.filter(item => !item.solved)
 
         transformedData.forEach((item, index) => {
           for (let i = 15; i > 0; i--) {
@@ -40,9 +42,8 @@ const Main = () => {
           }
       })
 
-        shuffleArray(transformedData)
-
-        setWords(transformedData)
+        shuffleArray(unsolved_words)
+        setWords(solved_words.concat(unsolved_words))
 
       }
     }
@@ -61,6 +62,41 @@ const Main = () => {
     fetchGameStats()
   }, [])
 
+  const newGame = async () =>{
+    try {
+      const [gameResponse, wbResponse] = await Promise.all([
+        fetch('/api/game', { method: 'DELETE' }),
+        fetch('/api/wb', { method: 'DELETE' })
+      ])
+  
+      if (!gameResponse.ok || !wbResponse.ok) {
+        console.error('Error during DELETE requests:', 
+          `Game response: ${gameResponse.statusText}, ` +
+          `Word bank response: ${wbResponse.statusText}`
+        )
+        return
+      }
+  
+      const [createwbResponse, creategameResponse] = await Promise.all([
+        fetch('/api/wb', { method: 'POST' }),
+        fetch('/api/game', { method: 'POST' })
+      ])
+  
+      if (!createwbResponse.ok || !creategameResponse.ok) {
+        console.error('Error during POST requests:', 
+          `Word bank response: ${createwbResponse.statusText}, ` +
+          `Game response: ${creategameResponse.statusText}`
+        )
+        return
+      }
+  
+      console.log('Both POST requests succeeded')
+  
+    } catch (error) {
+      console.error('Error during requests:', error)
+    }
+  }
+
   const handleWordClick = (word) => {
     if (selectedWords.includes(word)) {
       setSelectedWords(selectedWords.filter(selectedWord => selectedWord !== word))
@@ -74,7 +110,6 @@ const Main = () => {
       console.log("cant submit. Need 4 words")
     }
     else{
-      console.log(selectedWords)
       try{
         const response = await fetch('/api/game/answer', {
           method: 'POST',
@@ -86,13 +121,10 @@ const Main = () => {
         if (response.ok){
           const result = await response.json()
           const message = result.message
-          if (message === "answer correct"){
-            setSolvedWords(prevSolvedWords => [...prevSolvedWords, ...selectedWords])
-            setSelectedWords([])
+          if (message !== "answer correct"){
+            //telling user they are wrong 
           }
-          else{
-            console.log("wrong")
-          }
+          setSelectedWords([])
         }
         else{
           console.error('Error:', response.statusText)
@@ -113,10 +145,11 @@ const Main = () => {
         {words.map((item, index) => (
           <Wordscomp 
             key={index} 
-            word={item.word} 
+            word={item.word}
+            category = {item.category} 
             color={selectedWords.includes(item.word) ? "gray" : "white"}
             colorright = {item.colorright}
-            solved={solvedWords.includes(item.word) ? true : false}
+            solved={item.solved}
             onClick={() => handleWordClick(item.word)} 
           />
         ))}
@@ -125,7 +158,11 @@ const Main = () => {
           <MisComp mistake={mistakes} />
         </div>
         <div className="sub">
-          <Subcomp onClick={() => handleSubmitClick(selectedWords)} />
+          <Subcomp 
+          onClickSub={() => handleSubmitClick(selectedWords)} 
+          onClickNewGame={() => newGame()}
+          gamedone_now = {correct === 4 || mistakes === 0}
+          />
         </div>
       </div>
     )

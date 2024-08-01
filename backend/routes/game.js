@@ -18,7 +18,7 @@ router.post('/', createGame)
 router.post('/answer', check_answer)
 
 //end game
-router.delete('/end', endGame)
+router.delete('/', endGame)
 
 
 module.exports = router

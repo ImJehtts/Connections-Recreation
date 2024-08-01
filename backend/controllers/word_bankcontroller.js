@@ -46,7 +46,10 @@ const get_current_wb = async (req, res) =>{
         const current_wb = await Wb.find({})
         const wordBankMap = current_wb.reduce((map, wordBank) => {
             const category = wordBank.category
-            map[category] = wordBank.words
+            map[category] = {
+                words: wordBank.words,
+                solved: wordBank.solved
+            }
             return map
         }, {})
         res.status(200).json(wordBankMap)   
@@ -54,6 +57,8 @@ const get_current_wb = async (req, res) =>{
         res.status(404).json({error: error.message})  
        }
 }
+
+
 
 //create wordbank
 const createWb = async (req, res) => {

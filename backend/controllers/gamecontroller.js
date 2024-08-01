@@ -13,7 +13,8 @@ const get_current_game = async (req, res) =>{
 
 //create a new game
 const createGame = async (req, res) => {
-    const{mistakes, correct} = req.body
+    const mistakes = 4
+    const correct = 0
 
     try{
      const game = await Game.create({mistakes, correct})
@@ -52,7 +53,7 @@ const check_answer = async (req, res) => {
         }else{
             await Game.updateOne(
                 {_id: game._id}, 
-                {$: {mistakes: -1}})
+                {$inc: {mistakes: -1}})
             res.status(200).json({message: "answer incorrect"})  
         }
 
@@ -67,11 +68,8 @@ const check_answer = async (req, res) => {
 //end/delete game
 const endGame = async (req, res) => {
     try{
-        const game = await Game.deleteOne({})
-        if (result.deletedCount === 0){
-            return res.status(404).json({error: 'No game to delete/end'})
-        }
-        res.status(200).json({message: 'Game ended'})  
+        const deleting = await Game.deleteOne({})
+        res.status(200).json({message: 'games deleted'})   
     }catch (error){
         res.status(404).json({error: error.message})  
        }

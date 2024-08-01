@@ -13,4 +13,5 @@ router.post('/', createWb)
 
 router.delete('/', delete_wordbank)
 
+
 module.exports = router
