@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, } from "react"
+import {useWbContext} from '../hooks/useWordbankContext'
 import Wordscomp from '../components/Words'
 import Subcomp from '../components/Submission'
 import MisComp from '../components/Mistakes'
 
-//Colours for later when dealing with solving 
+
 const colorMap = ["yellow", "green", "lightblue", "plum"]
 
 function shuffleArray(array) {
@@ -15,12 +16,11 @@ function shuffleArray(array) {
 
 
 const Main = () => {
-  const [words, setWords] = useState([])
+  const {words, dispatch} = useWbContext()
   const [selectedWords, setSelectedWords] = useState([])
   const [mistakes, setMistakes] = useState(0)
   const [correct, setCorrect] = useState(0)
   
-  useEffect(()=>{
     const fetchWordbank = async () =>{
       const response = await fetch(`/api/wb`)
       const json = await response.json()
@@ -43,24 +43,26 @@ const Main = () => {
       })
 
         shuffleArray(unsolved_words)
-        setWords(solved_words.concat(unsolved_words))
+        dispatch({ type: 'SET_WORDS', payload: solved_words.concat(unsolved_words) })
 
       }
     }
 
-    const fetchGameStats = async () => {
-      const response = await fetch(`/api/game`)
-      const json = await response.json()
-
-      if (response.ok && json.length > 0) {
-        setMistakes(json[0].mistakes)
-        setCorrect(json[0].correct)
+    useEffect(() => {
+      fetchWordbank()
+  
+      const fetchGameStats = async () => {
+        const response = await fetch(`/api/game`)
+        const json = await response.json()
+  
+        if (response.ok && json.length > 0) {
+          setMistakes(json[0].mistakes)
+          setCorrect(json[0].correct)
+        }
       }
-    }
-
-    fetchWordbank()
-    fetchGameStats()
-  }, [])
+  
+      fetchGameStats()
+    }, [dispatch])
 
   const newGame = async () =>{
     try {
@@ -91,9 +93,20 @@ const Main = () => {
       }
   
       console.log('Both POST requests succeeded')
-  
+      fetchWordbank()
+      await fetchGameStats()
     } catch (error) {
       console.error('Error during requests:', error)
+    }
+  }
+
+  const fetchGameStats = async () => {
+    const response = await fetch(`/api/game`)
+    const json = await response.json()
+  
+    if (response.ok && json.length > 0) {
+      setMistakes(json[0].mistakes)
+      setCorrect(json[0].correct)
     }
   }
 
@@ -125,6 +138,8 @@ const Main = () => {
             //telling user they are wrong 
           }
           setSelectedWords([])
+          fetchWordbank()
+          await fetchGameStats()
         }
         else{
           console.error('Error:', response.statusText)
@@ -142,14 +157,14 @@ const Main = () => {
           <h2>Create groups of four!</h2>
         </div>
         <div className="words">
-        {words.map((item, index) => (
+        {(words || []).map((item, index) => (
           <Wordscomp 
             key={index} 
             word={item.word}
             category = {item.category} 
             color={selectedWords.includes(item.word) ? "gray" : "white"}
             colorright = {item.colorright}
-            solved={item.solved}
+            solved={mistakes === 0 ? true : item.solved}
             onClick={() => handleWordClick(item.word)} 
           />
         ))}
