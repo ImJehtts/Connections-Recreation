@@ -1,5 +1,4 @@
 import { useEffect, useState, } from "react"
-import {useWbContext} from '../hooks/useWordbankContext'
 import Wordscomp from '../components/Words'
 import Subcomp from '../components/Submission'
 import MisComp from '../components/Mistakes'
@@ -16,7 +15,7 @@ function shuffleArray(array) {
 
 
 const Main = () => {
-  const {words, dispatch} = useWbContext()
+  const [words, setWords] = useState([])
   const [selectedWords, setSelectedWords] = useState([])
   const [mistakes, setMistakes] = useState(0)
   const [correct, setCorrect] = useState(0)
@@ -50,7 +49,7 @@ const Main = () => {
 
         shuffleArray(unsolved_words)
         //sends an action (SET_WORDS) to the reducer to update the state with the new list of words
-        dispatch({ type: 'SET_WORDS', payload: solved_words.concat(unsolved_words) })
+        setWords(solved_words.concat(unsolved_words))
       }
     }
 
@@ -66,10 +65,9 @@ const Main = () => {
           setCorrect(json[0].correct)
         }
       }
-  
-      fetchGameStats()
       fetchWordbank()
-    }, [dispatch])
+      fetchGameStats()
+    }, [])
 
   const newGame = async () =>{
     //In this function, we delete the current wordbank and game stats doccuments and create new ones
