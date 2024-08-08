@@ -21,18 +21,24 @@ const Main = () => {
   const [mistakes, setMistakes] = useState(0)
   const [correct, setCorrect] = useState(0)
   
+  
     const fetchWordbank = async () =>{
       const response = await fetch(`/api/wb`)
       const json = await response.json()
 
+
       if (response.ok){
         const transformedData = []
+        //interate over the word bank
         Object.entries(json).forEach(([category, {words, solved}]) => {
+          //for each word in the current category 
           words.forEach(word => {
+            //add it to the list as an object with the properties i want
             transformedData.push({category, word, solved})
           })
         })
 
+        //We separate so solved words can be displayed first at the top
         const solved_words = transformedData.filter(item => item.solved)
         const unsolved_words = transformedData.filter(item => !item.solved)
 
@@ -43,13 +49,13 @@ const Main = () => {
       })
 
         shuffleArray(unsolved_words)
+        //sends an action (SET_WORDS) to the reducer to update the state with the new list of words
         dispatch({ type: 'SET_WORDS', payload: solved_words.concat(unsolved_words) })
-
       }
     }
 
+    //Need useEffect to make use of context 
     useEffect(() => {
-      fetchWordbank()
   
       const fetchGameStats = async () => {
         const response = await fetch(`/api/game`)
@@ -62,9 +68,12 @@ const Main = () => {
       }
   
       fetchGameStats()
+      fetchWordbank()
     }, [dispatch])
 
   const newGame = async () =>{
+    //In this function, we delete the current wordbank and game stats doccuments and create new ones
+    //Sets the stage for a new game 
     try {
       const [gameResponse, wbResponse] = await Promise.all([
         fetch('/api/game', { method: 'DELETE' }),
@@ -93,13 +102,14 @@ const Main = () => {
       }
   
       console.log('Both POST requests succeeded')
-      fetchWordbank()
-      await fetchGameStats()
+      await fetchWordbank()
+      fetchGameStats()
     } catch (error) {
       console.error('Error during requests:', error)
     }
   }
 
+  //Have to put this here again so we can call it in newGame()
   const fetchGameStats = async () => {
     const response = await fetch(`/api/game`)
     const json = await response.json()
@@ -111,8 +121,11 @@ const Main = () => {
   }
 
   const handleWordClick = (word) => {
+    //This allows user to unselect a word 
     if (selectedWords.includes(word)) {
       setSelectedWords(selectedWords.filter(selectedWord => selectedWord !== word))
+
+      //Allows user to select word
     } else if (selectedWords.length < 4) {
       setSelectedWords([...selectedWords, word])
     }
@@ -120,10 +133,12 @@ const Main = () => {
 
   const handleSubmitClick= async (selectedWords) =>{
     if (selectedWords.length < 4){
-      console.log("cant submit. Need 4 words")
+      alert("cant submit. Need 4 words")
     }
     else{
       try{
+        //This route in the backend checks if the answer is correct and responds with 'answer correct' or 'answer incorrect'
+        //It allows sets the category and all its words as solved 
         const response = await fetch('/api/game/answer', {
           method: 'POST',
           body: JSON.stringify({answerString: selectedWords}),
@@ -135,11 +150,12 @@ const Main = () => {
           const result = await response.json()
           const message = result.message
           if (message !== "answer correct"){
-            //telling user they are wrong 
+            alert("incorrect answer")
           }
           setSelectedWords([])
-          fetchWordbank()
-          await fetchGameStats()
+          //We refetch the wordbank so if they got the category correct, we can now display it as solved 
+          await fetchWordbank()
+          fetchGameStats()
         }
         else{
           console.error('Error:', response.statusText)
@@ -162,8 +178,10 @@ const Main = () => {
             key={index} 
             word={item.word}
             category = {item.category} 
+            //If word clicked, make it gray
             color={selectedWords.includes(item.word) ? "gray" : "white"}
             colorright = {item.colorright}
+            //If all mistakes used, show the correct answers
             solved={mistakes === 0 ? true : item.solved}
             onClick={() => handleWordClick(item.word)} 
           />
@@ -176,6 +194,7 @@ const Main = () => {
           <Subcomp 
           onClickSub={() => handleSubmitClick(selectedWords)} 
           onClickNewGame={() => newGame()}
+          //If either condition met, round is over
           gamedone_now = {correct === 4 || mistakes === 0}
           />
         </div>

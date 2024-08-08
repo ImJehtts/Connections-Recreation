@@ -43,15 +43,18 @@ const check_answer = async (req, res) => {
         })
 
         if(matchingWordBank){
+            //Set category to solved
             await Wb.updateOne(
                 {_id: matchingWordBank._id}, 
                 {$set: {solved: true}})
+            //if answer correct, increment correct 
             await Game.updateOne(
                 {_id: game._id}, 
                 {$inc: {correct: 1}})
             res.status(200).json({message: "answer correct", category: matchingWordBank.category})  
         }else{
             await Game.updateOne(
+                //if answer incorrect, decrement mistakes 
                 {_id: game._id}, 
                 {$inc: {mistakes: -1}})
             res.status(200).json({message: "answer incorrect"})  

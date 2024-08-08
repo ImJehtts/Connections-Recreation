@@ -12,7 +12,6 @@ const app = express()
 app.use(express.json())
 app.use(cors({origin: process.env.FRONT_END_PORT}))
 app.use((req, res, next) => {
-    console.log(req.path, req.method)
     next()
   })
 
@@ -23,7 +22,6 @@ app.use('/api', indexRoutes)
 mongoose.connect(process.env.MONG_URI)
   .then(() => { 
       app.listen(process.env.PORT, () =>{
-        console.log('listening on port')
     })
   })
   .catch((error) => {
