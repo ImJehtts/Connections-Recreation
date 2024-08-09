@@ -24,7 +24,7 @@ In this project, I used the MERN Stack with OpenAI's API to recreate the NYT Gam
      OPENAI_KEY=[YOUR OPENAI KEY]
      ```
      If you decide to use your own selected port numbers, make sure to change the backend port in package.json in the frontend 
-     src folder.
+     folder.
     ```
     {
      "proxy": "http://localhost:4000", //RIGHT HERE
