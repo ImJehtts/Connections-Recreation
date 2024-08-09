@@ -54,4 +54,4 @@ In this project, I used the MERN Stack with OpenAI's API to recreate the NYT Gam
      ```
      npm run dev 
      ```
-6. Now the project should run on [localhost](http://localhost:4000/)
+6. Now the project should run on [localhost](http://localhost:3000/)
