@@ -103,6 +103,11 @@ header a {
   margin-right: 0.625rem;
 }
 
+@media screen and (max-width: 900px){
+  .words-d {
+    font-size: 0.80rem; 
+  }
+}
 
 @media screen and (max-width: 600px){
   header .container {
